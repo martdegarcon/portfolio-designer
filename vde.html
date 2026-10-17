@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDE — AI-агент на холсте · Марат Мурзагалиев</title>
+<meta name="description" content="VDE — концепт среды разработки, где AI-агент собирает сайт из карточек на холсте и все его действия видны.">
+<meta property="og:image" content="assets/vde/p-hero.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Lebowski";src:url(assets/fonts/lebowski.ttf) format("truetype");font-weight:100 900;font-display:swap}
+:root{--bg:#FFFFFF;--surface:#F7F7F6;--surface-2:#F1F1F0;--ink:#17181A;--ink-2:#3C3B37;--ink-3:#5C5B56;--ink-4:#6F6E68;--ink-5:#85847E;--rule:#17181A29;--rule-soft:#17181A14;--acc:#FF601A;
+  --body:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;--accent:"Lebowski","Inter Tight",sans-serif;
+  --fs-xs:16px;--fs-s:18px;--fs-m:24px;--fs-l:36px;--fs-xl:52px;--r-tile:28px}
+@media (max-width:600px){:root{--fs-l:30px;--fs-xl:38px;--fs-m:22px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font:400 var(--fs-s)/1.55 var(--body);-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+a{color:inherit}
+img,video{display:block;width:100%;height:auto}
+.wide,.col{max-width:750px;margin-left:auto;margin-right:auto;padding-left:20px;padding-right:20px}
+.col.end,.col.facts{box-sizing:content-box;max-width:710px}
+nav{display:flex;justify-content:space-between;align-items:center;height:72px;font-size:var(--fs-xs);color:var(--ink-5)}
+nav a{text-decoration:none}
+nav a:hover{color:var(--ink)}
+header{padding:88px 20px 56px;display:flex;flex-direction:column;align-items:center;text-align:center}
+h1{font-family:var(--accent);font-weight:500;font-size:var(--fs-xl);line-height:1.02;letter-spacing:-.02em;text-wrap:balance}
+.summary{margin-top:24px;max-width:560px;color:var(--ink-4);text-wrap:balance}
+.summary span{color:var(--ink-4)}
+.meta{margin-top:28px;font-size:var(--fs-xs);color:var(--ink-5)}
+.meta b{color:var(--ink-2)!important}
+header p[style]{margin-top:28px!important}
+.prod{display:inline-flex;align-items:center;height:48px;padding:0 24px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-size:var(--fs-xs);font-weight:500;transition:transform .25s cubic-bezier(.25,1,.5,1)}
+.prod:active{transform:scale(.97)}
+figure{margin:40px auto}
+.shot{border-radius:var(--r-tile);overflow:hidden;background:var(--surface)}
+.shot.ui{background:#0b0b0d}
+figcaption{margin-top:14px;font-size:var(--fs-xs);color:var(--ink-5);text-align:center;text-wrap:balance}
+.clips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.clips .big{grid-column:1/-1}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.pair,.clips{grid-template-columns:1fr}}
+.stack{display:grid;gap:12px}
+.tag{display:block;margin:12px 0 20px;font-size:var(--fs-xs);color:var(--ink-5);text-align:center}
+article h2{margin:120px 0 24px;font-family:var(--accent);font-weight:500;font-size:var(--fs-l);line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;text-align:center}
+article h3{margin:56px 0 14px;font-family:var(--accent);font-weight:500;font-size:var(--fs-m);line-height:1.2;text-transform:lowercase}
+article p{margin:0 0 16px;color:var(--ink-2)}
+.list{margin:8px 0 24px;padding:0;list-style:none}
+.list li{position:relative;padding:14px 0 14px 28px;border-top:1px solid var(--rule-soft);color:var(--ink-2)}
+.list li:last-child{border-bottom:1px solid var(--rule-soft)}
+.list li::before{position:absolute;left:0;top:14px;color:var(--ink-5);content:'—'}
+.end{padding:140px 20px 140px;text-align:center}
+.end h2{font-family:var(--accent);font-weight:500;font-size:var(--fs-l);line-height:1.1;text-transform:lowercase}
+.end p{color:var(--ink-4);max-width:520px;margin-left:auto!important;margin-right:auto!important;text-wrap:balance}
+.end .link{color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--rule)}
+footer{padding:24px 20px 40px;font-size:var(--fs-xs);color:var(--ink-5);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--rule-soft);max-width:750px;margin:0 auto}
+footer a{text-decoration:none}
+figure.wide{max-width:1120px}
+@media (min-width:701px){figure.wide,.sum{max-width:min(1120px,calc(100vw - 296px))}.col:not(.end){max-width:min(750px,calc(100vw - 296px))}}
+.shot img,.shot video{cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:4vh 3vw;background:rgba(23,24,26,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);cursor:zoom-out}
+.lb.on{display:flex;animation:lbIn .3s cubic-bezier(.25,1,.5,1)}
+.lb img,.lb video{width:auto;height:auto;max-width:100%;max-height:100%;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.4)}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.rl{position:fixed;z-index:20;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding:10px 6px}
+.rl i{position:relative;display:block;height:2px;width:6px;border-radius:2px;background:var(--ink);opacity:.16;cursor:pointer;transition:width .35s cubic-bezier(.25,1,.5,1),opacity .35s,background-color .35s}
+.rl i.s{width:12px;opacity:.3}
+.rl i.on{background:var(--acc);opacity:1}
+.rl i::after{content:attr(data-t);position:absolute;right:38px;top:50%;transform:translate(6px,-50%);width:88px;text-align:right;white-space:normal;font-family:var(--accent);font-size:14px;line-height:1.05;color:var(--ink);text-transform:lowercase;text-wrap:balance;opacity:0;pointer-events:none;transition:opacity .25s,transform .35s cubic-bezier(.25,1,.5,1)}
+.rl i[data-t]:hover::after{opacity:1;transform:translate(0,-50%)}
+.rl:hover i[data-t].cur:not(:hover)::after{opacity:0}
+.rl.live i[data-t].cur::after{opacity:1;transform:translate(0,-50%)}
+@media (max-width:899px){.rl i::after{display:none}}
+.rl:hover i[data-t]:hover::after{opacity:1}
+.rl-pct{position:fixed;z-index:20;right:14px;bottom:18px;font-family:var(--accent);font-size:14px;color:var(--ink-5);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .3s}
+.rl-pct.on{opacity:1}
+@media (max-width:700px){.rl,.rl-pct{display:none}html{scrollbar-width:auto}html::-webkit-scrollbar{display:block}}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 auto 8px;max-width:1120px;padding:0 20px}
+.sum div{background:var(--surface);border-radius:var(--r-tile);padding:26px 26px 28px}
+.sum b{display:block;margin-bottom:10px;font-family:var(--accent);font-weight:500;font-size:var(--fs-m);line-height:1.1;text-transform:lowercase;color:var(--ink)}
+.sum p{margin:0;font-size:16px;line-height:1.5;color:var(--ink-3)}
+@media (max-width:760px){.sum{grid-template-columns:1fr}}
+.gc{position:fixed;left:0;top:0;z-index:60;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;display:grid;place-items:center;pointer-events:none;
+  background:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);box-shadow:0 8px 32px rgba(23,24,26,.14),0 1px 3px rgba(23,24,26,.06);
+  opacity:0;scale:.4;transition:opacity .25s cubic-bezier(.25,1,.5,1),scale .35s cubic-bezier(.25,1,.5,1)}
+.gc.on{opacity:1;scale:1}
+.gc svg{width:20px;height:20px;color:var(--acc)}
+@media (pointer:fine){.gc-t .shot img,.gc-t .shot video{cursor:none}}
+@media not (pointer:fine){.gc{display:none}}
+html.embed nav,html.embed footer{display:none}
+html.embed header{padding-top:96px}
+</style>
+<script>if (window.self !== window.top) document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+<nav class="wide"><a href="index.html#work">← Все проекты</a><a href="index.html">Марат Мурзагалиев</a></nav>
+
+<header class="wide">
+  <h1>AI-агент, который собирает сайт у&nbsp;тебя на&nbsp;глазах</h1>
+  <p class="summary">VDE — концепт среды разработки. Сайт собирается из карточек на холсте, а агент помогает: предлагает план, достраивает пайплайн и чинит ошибки. <span>Всё, что он делает, видно на карточках.</span></p>
+  <p class="meta"><b style="color:var(--ink);font-weight:500">Дизайн + прототип на HTML/JS</b> · концепт, AI-инструменты</p>
+</header>
+
+<section class="sum" aria-label="Коротко о кейсе">
+  <div><b>Задача</b><p>Сделать работу AI-агента видимой: чтобы он работал на одном холсте с человеком, а не по схеме «промпт — ожидание — результат», где непонятно, что пошло не так.</p></div>
+  <div><b>Решение</b><p>Пайплайн из карточек, где агент один раз предлагает план и дальше молчит, а его работа видна на карточках и в логах. Агент предлагает — решает человек.</p></div>
+  <div><b>Результат</b><p>Рабочий прототип, который за пару минут проходит весь путь: запрос в чате, план, карточки, ошибка, фикс и готовая страница.</p></div>
+</section>
+
+<figure class="wide">
+  <div class="shot ui"><video src="assets/vde/hero.mp4" poster="assets/vde/p-hero.webp" width="1440" height="900" autoplay muted loop playsinline preload="metadata"></video></div>
+  <figcaption>Весь сценарий целиком: запрос в чате, план, карточки, ошибка, фикс и готовая страница. Это мой концепт без клиента, поэтому показываю всё, включая сломанный билд. Все видео записаны из рабочего прототипа.</figcaption>
+</figure>
+
+<article>
+  <div class="col">
+    <h2>Зачем</h2>
+    <p>Многие AI-инструменты работают по схеме «написал промпт — подождал — получил результат». Если что-то пошло не так, непонятно, что именно.</p>
+    <p>Мне было интересно попробовать по-другому: чтобы агент работал на том же холсте, что и человек, и каждое его действие было видно.</p>
+
+    <h2>Что я делал</h2>
+    <p>Всё сам: сценарий, интерфейс и прототип на HTML/CSS/JS. Прототип нужен был, чтобы проверять решения в движении: в AI-интерфейсе многое решают переходы между состояниями, а на статичных макетах их не видно.</p>
+    <p>Настоящего агента внутри нет, сценарий заскриптован.</p>
+
+    <h2>Решения</h2>
+    <h3>Холст из карточек</h3>
+    <p>Пайплайн — это восемь карточек, от брифа до превью. На связях подписано, что по ним передаётся. Пока не нажат Run, карточка Code пустая: показывать готовый код до запуска было бы нечестно.</p>
+  </div>
+  <figure class="wide"><div class="shot ui"><video src="assets/vde/pipeline.mp4" poster="assets/vde/p-pipeline.webp" width="1920" height="1080" autoplay muted loop playsinline preload="metadata"></video></div></figure>
+
+  <div class="col">
+    <h3>План вместо комментариев</h3>
+    <p>Сначала агент комментировал каждое действие пользователя, и это мешало. Теперь он один раз предлагает план и дальше молчит. По шагу плана можно кликнуть, и сразу откроется меню с нужной карточкой.</p>
+    <p>Первые карточки пользователь добавляет сам, а остальное можно отдать агенту одной кнопкой.</p>
+  </div>
+  <figure class="wide"><div class="shot ui"><video src="assets/vde/toolbar.mp4" poster="assets/vde/p-toolbar.webp" width="1920" height="1080" autoplay muted loop playsinline preload="metadata"></video></div></figure>
+
+  <div class="col">
+    <h3>Одна иконка агента</h3>
+    <p>В чате у каждого сообщения была иконка агента, и в итоге их набиралось штук восемь подряд. Оставил одну, в шапке чата: она показывает, что агент делает сейчас — ждёт, думает или собирает пайплайн.</p>
+  </div>
+  <figure class="wide"><div class="shot ui"><video src="assets/vde/chat.mp4" poster="assets/vde/p-chat.webp" width="1920" height="1200" autoplay muted loop playsinline preload="metadata"></video></div></figure>
+
+  <div class="col">
+    <h3>Ошибка и фикс</h3>
+    <p>Первый запуск в демо падает. Логи плавно открываются, а в строке с ошибкой есть кнопка Fix with AI.</p>
+    <p>Пока агент чинит, в логах по шагам видно, что он делает, а на карточках — что меняется: в коде появляется дифф <code>p.cost</code> → <code>p.price</code>. Перезапускает пользователь.</p>
+  </div>
+  <figure class="wide"><div class="shot ui"><video src="assets/vde/logs.mp4" poster="assets/vde/p-logs.webp" width="1920" height="1080" autoplay muted loop playsinline preload="metadata"></video></div></figure>
+
+  <div class="col">
+    <h3>Меньше переходов</h3>
+    <p>Камера приближается туда, где что-то происходит. Сначала она дёргалась между карточкой и тулбаром. Замедление помогло мало. Лучше сработало убрать лишние переходы, чтобы не ездить туда-сюда.</p>
+  </div>
+  <figure class="wide"><div class="shot ui"><video src="assets/vde/camera.mp4" poster="assets/vde/p-camera.webp" width="1920" height="1200" autoplay muted loop playsinline preload="metadata"></video></div></figure>
+
+  <div class="col">
+    <h3>Понятные названия</h3>
+    <p>Temperature заменил на Creativity, а лимит токенов — на качество HD / 2K / 4K. Человеку, который собирает лендинг, это понятнее. Все поля одной высоты, 48 px.</p>
+  </div>
+  <figure class="wide"><div class="shot ui"><video src="assets/vde/sidebar.mp4" poster="assets/vde/p-sidebar.webp" width="1920" height="1080" autoplay muted loop playsinline preload="metadata"></video></div></figure>
+
+  <div class="col">
+    <h2>Почему агент не делает всё сам</h2>
+    <p>Можно было сделать агента, который собирает всё по одному промпту. Это быстрее, но тогда непонятно, из чего собран сайт и что чинить, если он сломался. Поэтому здесь агент предлагает, а решает человек.</p>
+    <p>Минус — лишние клики в начале. Опытным пользователям, скорее всего, понадобится режим «собери всё сразу».</p>
+
+    <h2>Что получилось</h2>
+    <p>Прототип, который за пару минут проходит весь путь: запрос в чате, план, карточки, ошибка, фикс и готовая страница. В конце можно попросить поменять стиль, и превью пересоберётся.</p>
+  </div>
+  <figure class="wide">
+    <div class="pair">
+      <div><div class="shot ui"><video src="assets/vde/before.mp4" poster="assets/vde/p-before.webp" width="1920" height="1200" autoplay muted loop playsinline preload="metadata"></video></div><span class="tag">Первая сборка</span></div>
+      <div><div class="shot ui"><video src="assets/vde/after.mp4" poster="assets/vde/p-after.webp" width="1920" height="1200" autoplay muted loop playsinline preload="metadata"></video></div><span class="tag">После просьбы «сделай светлее и смени фото»</span></div>
+    </div>
+  </figure>
+  <div class="col">
+    <p>Чего тут нет: настоящего агента и проверки на пользователях. Следующим шагом я бы показал прототип нескольким дизайнерам и разработчикам и посмотрел, в какой момент им удобно отдавать работу агенту.</p>
+  </div>
+</article>
+
+<section class="col end">
+  <h2>Есть вопросы — пишите</h2>
+  <p style="margin:28px 0 0"><a class="prod" href="https://t.me/martgarcon" target="_blank" rel="noopener">Написать в Telegram</a></p>
+</section>
+
+<footer class="wide"><span>Марат Мурзагалиев · продуктовый дизайнер</span><a href="index.html#work">Все проекты →</a></footer>
+
+<div class="lb" id="lb" aria-hidden="true"></div>
+<script>
+(()=>{ const lb=document.getElementById('lb'), embed=window.self!==window.top;
+  const show=(kind,src,poster)=>{ lb.innerHTML=kind==='video'?'<video src="'+src+'"'+(poster?' poster="'+poster+'"':'')+' autoplay muted loop playsinline controls></video>':'<img src="'+src+'" alt="">'; lb.classList.add('on'); };
+  const hide=()=>{ lb.classList.remove('on'); lb.innerHTML=''; };
+  document.addEventListener('click',e=>{ const m=e.target.closest('.shot img,.shot video'); if(!m) return; e.preventDefault();
+    const kind=m.tagName==='VIDEO'?'video':'img', src=new URL(m.currentSrc||m.getAttribute('src'),location.href).href, poster=m.poster||'';
+    if(embed){ try{ parent.postMessage({type:'rk-lightbox',kind,src,poster},'*'); return; }catch(err){} }
+    show(kind,src,poster); });
+  lb.addEventListener('click',hide);
+  addEventListener('keydown',e=>{ if(e.key==='Escape') hide(); });
+})();
+
+/* ---------- Типограф: без висячих предлогов ---------- */
+(()=>{ const re=/(^|[\s\u00A0(«])(в|во|и|с|со|к|ко|о|об|у|а|я|на|по|до|из|от|за|не|но|же|для|так|как|что|это|при|про|над|под|без)\s+/gi;
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('script,style,svg,.track')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const ns=[]; while(w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n=>{ let t=n.nodeValue; const o=t; t=t.replace(re,(m,a,b)=>a+b+'\u00A0').replace(re,(m,a,b)=>a+b+'\u00A0').replace(/\s+—/g,'\u00A0—'); if(t!==o) n.nodeValue=t; });
+})();
+
+/* ---------- Плавный скролл (колесо и якоря), на тач — нативный ---------- */
+(()=>{
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches || !matchMedia('(pointer:fine)').matches) { document.documentElement.style.scrollBehavior='smooth'; return; }
+  let target=scrollY, cur=scrollY, run=false;
+  const max=()=>document.documentElement.scrollHeight-innerHeight;
+  const loop=()=>{ cur+=(target-cur)*.09; if(Math.abs(target-cur)<.5){ cur=target; run=false; } scrollTo(0,cur); if(run) requestAnimationFrame(loop); };
+  const go=y=>{ target=Math.max(0,Math.min(max(),y)); if(!run){ cur=scrollY; run=true; requestAnimationFrame(loop); } }; window.__go=go;
+  addEventListener('wheel',e=>{ if(document.getElementById('lb').classList.contains('on')) return; if(e.ctrlKey || Math.abs(e.deltaX)>Math.abs(e.deltaY)) return; e.preventDefault();
+    const dy=e.deltaMode===1?e.deltaY*32:e.deltaY; if(!run) target=scrollY; go(target+dy); },{passive:false});
+  addEventListener('scroll',()=>{ if(!run){ target=cur=scrollY; } },{passive:true});
+  document.addEventListener('click',e=>{ const a=e.target.closest('a[href^="#"]'); if(!a) return; const id=a.getAttribute('href').slice(1);
+    const el=id?document.getElementById(id):document.body; if(!el) return; e.preventDefault(); go(el.getBoundingClientRect().top+scrollY-24); });
+  addEventListener('keydown',e=>{ const k={ArrowDown:80,ArrowUp:-80,PageDown:innerHeight*.9,PageUp:-innerHeight*.9,' ':innerHeight*.9}[e.key];
+    if(k===undefined || /input|textarea/i.test(e.target.tagName) || document.querySelector('dialog[open]')) return; e.preventDefault(); if(!run) target=scrollY; go(target+(e.shiftKey&&e.key===' '?-k:k)); });
+})();
+/* ---------- Линейка прокрутки ---------- */
+(()=>{ const N=46, rl=document.createElement('div'); rl.className='rl'; rl.setAttribute('aria-hidden','true');
+  const pct=document.createElement('div'); pct.className='rl-pct';
+  const ticks=[...Array(N)].map(()=>{ const i=document.createElement('i'); rl.append(i); return i; });
+  document.body.append(rl,pct);
+  const max=()=>Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  let secs=[];
+  const map=()=>{ ticks.forEach(t=>{ t.classList.remove('s'); t.removeAttribute('data-t'); t.dataset.y=''; });
+    secs=[...document.querySelectorAll('article h2, .end h2')].map(h=>{ const y=Math.min(max(),h.getBoundingClientRect().top+scrollY-40), k=Math.round(y/max()*(N-1));
+      const t=ticks[k]; t.classList.add('s'); t.dataset.t=h.textContent.trim(); t.dataset.y=y; return {k,y}; }); };
+  const jump=y=>window.__go?__go(y):scrollTo({top:y,behavior:'smooth'});
+  ticks.forEach((t,k)=>t.addEventListener('click',()=>jump(t.dataset.y?+t.dataset.y:k/(N-1)*max())));
+  let hide=0;
+  const draw=()=>{ const p=scrollY/max(), c=p*(N-1);
+    ticks.forEach((t,k)=>{ const d=Math.abs(k-c), w=Math.max(0,1-d/4); const base=t.classList.contains('s')?12:6;
+      t.style.width=(base+w*20)+'px'; t.style.opacity=t.classList.contains('on')?1:(t.classList.contains('s')?.3:.16)+w*.55; });
+    const ci=Math.round(c); ticks.forEach((t,k)=>t.classList.toggle('on',k===ci));
+    let cur=-1; secs.forEach((s,i)=>{ if(scrollY>=s.y-innerHeight*.4) cur=i; }); ticks.forEach(t=>t.classList.remove('cur')); if(cur>=0) ticks[secs[cur].k].classList.add('cur');
+    pct.textContent=String(Math.round(p*100)).padStart(2,'0')+'%'; pct.classList.add('on'); rl.classList.add('live'); clearTimeout(hide); hide=setTimeout(()=>{ pct.classList.remove('on'); rl.classList.remove('live'); },1200); };
+  let raf=0; addEventListener('scroll',()=>{ if(!raf) raf=requestAnimationFrame(()=>{ raf=0; draw(); }); },{passive:true});
+  addEventListener('resize',()=>{ map(); draw(); }); addEventListener('load',()=>{ map(); draw(); });
+  map(); draw(); setTimeout(()=>{ map(); draw(); },1500);
+})();
+
+/* ---------- Стеклянный курсор над медиа ---------- */
+(()=>{ if(!matchMedia('(pointer:fine)').matches) return; document.documentElement.classList.add('gc-t');
+  const c=document.createElement('div'); c.className='gc'; c.setAttribute('aria-hidden','true');
+  c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M10.5 7.8v5.4M7.8 10.5h5.4"/></svg>';
+  document.body.append(c);
+  let x=0,y=0,cx=0,cy=0,raf=0,on=false;
+  const loop=()=>{ cx+=(x-cx)*.28; cy+=(y-cy)*.28; c.style.transform='translate('+cx+'px,'+cy+'px)'; raf=(on||Math.abs(x-cx)+Math.abs(y-cy)>.5)?requestAnimationFrame(loop):0; };
+  let seen=false;
+  const check=()=>{ if(!seen) return; const el=document.elementFromPoint(x,y), t=el&&el.closest('.shot img,.shot video');
+    if(t&&!document.getElementById('lb').classList.contains('on')){ if(!on){ on=true; if(!c.classList.contains('on')){ cx=x; cy=y; } c.classList.add('on'); } } else if(on){ on=false; c.classList.remove('on'); }
+    if(!raf) raf=requestAnimationFrame(loop); };
+  addEventListener('pointermove',e=>{ x=e.clientX; y=e.clientY; seen=true; check(); },{passive:true});
+  addEventListener('scroll',check,{passive:true});
+  document.documentElement.addEventListener('mouseleave',()=>{ seen=false; on=false; c.classList.remove('on'); });
+  addEventListener('click',()=>{ on=false; c.classList.remove('on'); },true);
+})();
+
+</script>
+</body>
+</html>

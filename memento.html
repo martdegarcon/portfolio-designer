@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Приложение против залипания в шортсы и тиктоки · Марат Мурзагалиев</title>
+<meta name="description" content="Memento — приложение для строки меню Mac, которое вытаскивает из залипания в шортсы и ленты: показывает календарь жизни в момент отвлечения, не приедается и не стыдит.">
+<meta property="og:image" content="assets/memento/hero.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Lebowski";src:url(assets/fonts/lebowski.ttf) format("truetype");font-weight:100 900;font-display:swap}
+:root{--bg:#FFFFFF;--surface:#F7F7F6;--surface-2:#F1F1F0;--ink:#17181A;--ink-2:#3C3B37;--ink-3:#5C5B56;--ink-4:#6F6E68;--ink-5:#85847E;--rule:#17181A29;--rule-soft:#17181A14;--acc:#FF601A;
+  --body:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;--accent:"Lebowski","Inter Tight",sans-serif;
+  --fs-xs:16px;--fs-s:18px;--fs-m:24px;--fs-l:36px;--fs-xl:52px;--r-tile:28px}
+@media (max-width:600px){:root{--fs-l:30px;--fs-xl:38px;--fs-m:22px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font:400 var(--fs-s)/1.55 var(--body);-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+a{color:inherit}
+img,video{display:block;width:100%;height:auto}
+.wide,.col{max-width:750px;margin-left:auto;margin-right:auto;padding-left:20px;padding-right:20px}
+.col.end,.col.facts{box-sizing:content-box;max-width:710px}
+nav{display:flex;justify-content:space-between;align-items:center;height:72px;font-size:var(--fs-xs);color:var(--ink-5)}
+nav a{text-decoration:none}
+nav a:hover{color:var(--ink)}
+header{padding:88px 20px 56px;display:flex;flex-direction:column;align-items:center;text-align:center}
+h1{font-family:var(--accent);font-weight:500;font-size:var(--fs-xl);line-height:1.02;letter-spacing:-.02em;text-wrap:balance}
+.summary{margin-top:24px;max-width:560px;color:var(--ink-4);text-wrap:balance}
+.summary span{color:var(--ink-4)}
+.meta{margin-top:28px;font-size:var(--fs-xs);color:var(--ink-5)}
+.meta b{color:var(--ink-2)!important}
+header p[style]{margin-top:28px!important}
+.prod{display:inline-flex;align-items:center;height:48px;padding:0 24px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-size:var(--fs-xs);font-weight:500;transition:transform .25s cubic-bezier(.25,1,.5,1)}
+.prod:active{transform:scale(.97)}
+figure{margin:40px auto}
+.shot{border-radius:var(--r-tile);overflow:hidden;background:var(--surface)}
+.shot.ui{background:#0b0b0d}
+figcaption{margin-top:14px;font-size:var(--fs-xs);color:var(--ink-5);text-align:center;text-wrap:balance}
+.clips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.clips .big{grid-column:1/-1}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.pair,.clips{grid-template-columns:1fr}}
+.stack{display:grid;gap:12px}
+.tag{display:block;margin:12px 0 20px;font-size:var(--fs-xs);color:var(--ink-5);text-align:center}
+article h2{margin:120px 0 24px;font-family:var(--accent);font-weight:500;font-size:var(--fs-l);line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;text-align:center}
+article h3{margin:56px 0 14px;font-family:var(--accent);font-weight:500;font-size:var(--fs-m);line-height:1.2;text-transform:lowercase}
+article p{margin:0 0 16px;color:var(--ink-2)}
+.list{margin:8px 0 24px;padding:0;list-style:none}
+.list li{position:relative;padding:14px 0 14px 28px;border-top:1px solid var(--rule-soft);color:var(--ink-2)}
+.list li b{color:var(--ink);font-weight:500}
+.cmd{margin:12px 0;padding:14px 16px;border-radius:14px;background:var(--surface);font:500 14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.list li a{text-underline-offset:3px;text-decoration-color:var(--rule)}
+.list li:last-child{border-bottom:1px solid var(--rule-soft)}
+.list li::before{position:absolute;left:0;top:14px;color:var(--ink-5);content:'—'}
+.end{padding:140px 20px 140px;text-align:center}
+.end h2{font-family:var(--accent);font-weight:500;font-size:var(--fs-l);line-height:1.1;text-transform:lowercase}
+.end p{color:var(--ink-4);max-width:520px;margin-left:auto!important;margin-right:auto!important;text-wrap:balance}
+.end .link{color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--rule)}
+footer{padding:24px 20px 40px;font-size:var(--fs-xs);color:var(--ink-5);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--rule-soft);max-width:750px;margin:0 auto}
+footer a{text-decoration:none}
+figure.wide{max-width:1120px}
+@media (min-width:701px){figure.wide,.sum{max-width:min(1120px,calc(100vw - 296px))}.col:not(.end){max-width:min(750px,calc(100vw - 296px))}}
+.shot img,.shot video{cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:4vh 3vw;background:rgba(23,24,26,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);cursor:zoom-out}
+.lb.on{display:flex;animation:lbIn .3s cubic-bezier(.25,1,.5,1)}
+.lb img,.lb video{width:auto;height:auto;max-width:100%;max-height:100%;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.4)}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.rl{position:fixed;z-index:20;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding:10px 6px}
+.rl i{position:relative;display:block;height:2px;width:6px;border-radius:2px;background:var(--ink);opacity:.16;cursor:pointer;transition:width .35s cubic-bezier(.25,1,.5,1),opacity .35s,background-color .35s}
+.rl i.s{width:12px;opacity:.3}
+.rl i.on{background:var(--acc);opacity:1}
+.rl i::after{content:attr(data-t);position:absolute;right:38px;top:50%;transform:translate(6px,-50%);width:88px;text-align:right;white-space:normal;font-family:var(--accent);font-size:14px;line-height:1.05;color:var(--ink);text-transform:lowercase;text-wrap:balance;opacity:0;pointer-events:none;transition:opacity .25s,transform .35s cubic-bezier(.25,1,.5,1)}
+.rl i[data-t]:hover::after{opacity:1;transform:translate(0,-50%)}
+.rl:hover i[data-t].cur:not(:hover)::after{opacity:0}
+.rl.live i[data-t].cur::after{opacity:1;transform:translate(0,-50%)}
+@media (max-width:899px){.rl i::after{display:none}}
+.rl:hover i[data-t]:hover::after{opacity:1}
+.rl-pct{position:fixed;z-index:20;right:14px;bottom:18px;font-family:var(--accent);font-size:14px;color:var(--ink-5);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .3s}
+.rl-pct.on{opacity:1}
+@media (max-width:700px){.rl,.rl-pct{display:none}html{scrollbar-width:auto}html::-webkit-scrollbar{display:block}}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 auto 8px;max-width:1120px;padding:0 20px}
+.sum div{background:var(--surface);border-radius:var(--r-tile);padding:26px 26px 28px}
+.sum b{display:block;margin-bottom:10px;font-family:var(--accent);font-weight:500;font-size:var(--fs-m);line-height:1.1;text-transform:lowercase;color:var(--ink)}
+.sum p{margin:0;font-size:16px;line-height:1.5;color:var(--ink-3)}
+@media (max-width:760px){.sum{grid-template-columns:1fr}}
+.gc{position:fixed;left:0;top:0;z-index:60;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;display:grid;place-items:center;pointer-events:none;
+  background:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);box-shadow:0 8px 32px rgba(23,24,26,.14),0 1px 3px rgba(23,24,26,.06);
+  opacity:0;scale:.4;transition:opacity .25s cubic-bezier(.25,1,.5,1),scale .35s cubic-bezier(.25,1,.5,1)}
+.gc.on{opacity:1;scale:1}
+.gc svg{width:20px;height:20px;color:var(--acc)}
+@media (pointer:fine){.gc-t .shot img,.gc-t .shot video{cursor:none}}
+@media not (pointer:fine){.gc{display:none}}
+html.embed nav,html.embed footer{display:none}
+html.embed header{padding-top:96px}
+</style>
+<script>if (window.self !== window.top) document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+<nav class="wide"><a href="index.html#work">← Все проекты</a><a href="index.html">Марат Мурзагалиев</a></nav>
+
+<header class="wide">
+  <h1>Приложение против залипания в&nbsp;шортсы и&nbsp;тиктоки</h1>
+  <p class="summary">Memento живёт в строке меню Mac. Когда я залипаю в YouTube или ленту, он показывает, сколько жизни уже прожито, и спрашивает, чем займусь дальше. <span>Кейс о том, как сделать такую встряску, к которой не привыкаешь через неделю и которая не давит чувством вины.</span></p>
+  <p class="meta"><b style="color:var(--ink);font-weight:500">Продуктовый дизайн + разработка</b> · macOS, Swift</p>
+</header>
+
+<section class="sum" aria-label="Коротко о кейсе">
+  <div><b>Задача</b><p>Старая версия раз в час-два показывала дашборд из семи блоков. Такое окно перестаёшь замечать через одну-две недели, а во время работы оно мешает. Нужно было сохранить силу встряски и при этом никого не стыдить.</p></div>
+  <div><b>Решение</b><p>Встряска приходит, когда я залип, а не по часам: сначала тихий сигнал, потом окно. Одна мысль за раз, ракурс меняется от показа к показу, вместо укора — факт и вопрос «чем займёшься».</p></div>
+  <div><b>Результат</b><p>Рабочее приложение для строки меню. Молчит во время звонков, сна и когда меня нет за компьютером. Ведёт журнал показов и реакций, чтобы через 2–4 недели проверить, держится ли эффект.</p></div>
+</section>
+
+<figure class="wide">
+  <div class="shot"><img src="assets/memento/hero.webp" width="2240" height="1520" alt="Окно Memento поверх рабочего стола: 6 минут на youtube.com, идёт 326-й месяц жизни" loading="lazy"></div>
+  <figcaption>Шесть минут на YouTube — и поверх браузера появляется календарь жизни с одним вопросом: чем займёшься сейчас.</figcaption>
+</figure>
+
+<article>
+  <div class="col">
+    <h2>С чего всё началось</h2>
+    <p>У меня была самописная утилита в строке меню. Раз в час-два она открывала окно: часы, сколько осталось до сна, прогресс недели, месяца, года и жизни, две сетки точек, два поля для записей и цитата.</p>
+    <p>Идея была простая: сидишь, листаешь рилсы, тут всплывает сетка прожитых месяцев — и ты возвращаешься к работе. Чувство «жизнь-то тикает» должно было срабатывать как встряска.</p>
+    <p>Я решил пересобрать её с нуля и посмотреть на неё как на продукт, а не как на набор виджетов.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot" style="max-width:420px;margin:0 auto"><img src="assets/memento/old.webp" width="996" height="1710" alt="Старая версия: часы, четыре карточки с процентами, две сетки, два поля ввода и цитата" loading="lazy"></div>
+    <figcaption>Старая версия: семь блоков, которые надо читать, а не замечать.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h2>Что было не так</h2>
+    <p>Когда разобрал окно по частям, оказалось, что в нём живут три разных продукта: напоминание о конечности времени, журнал «что успел — чем занят» и мотивационная цитата. У каждого своя частота и свой эмоциональный вес, а показывались они все вместе.</p>
+    <p>Главная проблема — вес контента не совпадал с частотой показа. Сетка жизни работает, когда видишь её редко. Если она всплывает каждый час, через неделю-две глаз перестаёт её замечать. Самое сильное средство обесценивалось быстрее всего.</p>
+    <p>Сначала я потянул продукт в сторону журнала: связать два поля в цикл «план → факт» и сделать итог дня. Получалось аккуратно, но это был уже другой продукт — трекер времени, каких много. Исходная идея была не в учёте, а во встряске. Её я и оставил, а всё остальное убрал.</p>
+  </div>
+
+  <div class="col">
+    <h2>Одна проблема и три ограничения</h2>
+    <p>Задачу сформулировал так: как напоминать о конечности времени, чтобы на сотом показе это работало так же, как на первом. И сразу упёрся в три ограничения, которые тянут в разные стороны.</p>
+    <ul class="list">
+      <li><b>Не наказывать хорошее поведение.</b> Таймер не знает, залип я или работаю. Если окно прерывает поток, я учусь закрывать его не глядя — и пропускаю его и в момент залипания.</li>
+      <li><b>Не приедаться.</b> Одна и та же картинка через одну-две недели становится фоном и перестаёт вызывать реакцию.</li>
+      <li><b>Без стыда.</b> «Ты опять залип» — это укор. Он усиливает тревогу, и от такого приложения отписываются. Особенно люди, у которых тревожность и так высокая.</li>
+    </ul>
+    <p>Чем сильнее встряска, тем выше риск стыда. Чем реже показ, тем проще пропустить залипание. Ослаблять удар я не хотел — значит, нужно было точнее выбирать момент и форму.</p>
+  </div>
+
+  <div class="col">
+    <h2>Кто уже решал похожие задачи</h2>
+    <p>Прямого аналога не нашёл, но у каждой соседней категории есть решение для одного из ограничений.</p>
+    <ul class="list">
+      <li><a href="https://one-sec.app/max-planck-study" target="_blank" rel="noopener">one sec</a> перехватывает открытие соцсетей дыхательной паузой. В исследовании с Институтом Макса Планка использование соцсетей снизилось на 57%. Но обозреватели пишут, что через несколько недель пауза превращается в ещё одну кнопку, которую проходят на автопилоте. То есть привыкание — проблема всей категории, а не только моя.</li>
+      <li>У one sec же есть счётчик попыток за сутки. Обозреватели называют его самым действенным — и самым стыдящим. Отсюда задача: сохранить силу факта, но убрать оценку.</li>
+      <li><a href="https://apps.apple.com/us/app/-/id1541027222" target="_blank" rel="noopener">ScreenZen</a> увеличивает задержку с каждым открытием — эскалация вместо одинакового экрана.</li>
+      <li><a href="https://apps.apple.com/app/id1248149943" target="_blank" rel="noopener">WeCroak</a> пять раз в день в случайное время напоминает о смерти, но только с 7 до 22. Случайность — против привыкания, часы тишины — уважение к границам.</li>
+      <li>Приложений «жизнь в неделях» десятки, и они почти одинаковые: сама сетка — уже товар. Выделиться можно только тем, когда и как она показывается. В <a href="https://apps.apple.com/app/id6758799075" target="_blank" rel="noopener">Finite Grid</a> подсмотрел мысль, что прожитые недели могут быть наполненными, а не «сгоревшими».</li>
+      <li><a href="https://lookaway.app/blog/2025/04/07/how-i-made-break-reminders-less-annoying" target="_blank" rel="noopener">LookAway</a> — напоминания о перерывах на Mac — сам ставит паузу во время звонков, записи экрана и видео. Автор пишет, что прерывание без учёта контекста ощущается как диктатор, а приложение, которое не различает контекст, превращается в фоновый шум.</li>
+      <li><a href="https://makeheadway.com/blog/finch-app-review/" target="_blank" rel="noopener">Finch</a> не наказывает за пропущенные дни. Для людей с тревожностью это важно: вина и так звучит у них во внутреннем монологе.</li>
+    </ul>
+  </div>
+  <figure class="wide">
+    <div class="shot"><img src="assets/memento/map.webp" width="2240" height="1360" alt="Карта: по горизонтали — знает ли продукт, что ты делаешь, по вертикали — говорит ли он о конечности времени. Memento в пустом правом верхнем углу" loading="lazy"></div>
+    <figcaption>Memento mori-приложения говорят о времени, но не знают, что ты делаешь. Блокировщики знают, но говорят на языке «трать меньше».</figcaption>
+  </figure>
+
+  <div class="col">
+    <h2>Решения</h2>
+
+    <h3>Срабатывать на залипание, а не по часам</h3>
+    <p>Главный триггер — отвлечение. Я сам задаю список сайтов и приложений. Если одно из них дольше порога на экране, приходит встряска. Чтобы поймать залипание вне списка, иногда встряска приходит и просто так — в случайный момент, примерно раз в два часа.</p>
+    <p>Memento молчит вне часов бодрствования, когда экран заблокирован и во время звонков. Звонок определяется по включённому микрофону, поэтому ловится любой созвон — Zoom, Телемост, Meet в браузере — без списков.</p>
+
+    <h3>Сначала шёпот, потом окно</h3>
+    <p>Окно не прыгает сразу. Сначала в строке меню начинает мигать точка, а рядом появляется причина: «6 мин на youtube.com». У меня есть полторы минуты, чтобы уйти самому, — и тогда окна не будет.</p>
+    <p>Это и есть «не наказывать хорошее поведение»: самостоятельное возвращение засчитывается, а не перебивается. В журнале оно пишется отдельным событием — это главная метрика, на которую я буду смотреть.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot"><img src="assets/memento/escalation.webp" width="2240" height="1560" alt="Три ступени: спокойная строка меню, тихий сигнал с причиной, окно встряски" loading="lazy"></div>
+    <figcaption>Три ступени: спокойно → тихий сигнал с причиной → окно, если не ушёл сам.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>Против привыкания: другой ракурс и видимое изменение</h3>
+    <p>Статичная сетка «58% жизни» каждый раз одинаковая. Поэтому ракурс меняется от показа к показу: жизнь в месяцах, год в днях, сегодняшние часы до сна. Одна и та же мысль в разных единицах.</p>
+    <p>При каждом открытии прожитые точки заполняются заново за секунду, а текущая начинает пульсировать. Так видно, что время идёт, а не стоит на картинке.</p>
+    <p>И самое важное против привыкания — редкость. Встряска приходит тогда, когда она уместна, а не по расписанию. Чем меньше лишних показов, тем дольше она остаётся заметной.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot"><img src="assets/memento/angles.webp" width="2240" height="1091" alt="Три ракурса: жизнь в месяцах, год в днях, сегодняшние часы" loading="lazy"></div>
+    <figcaption>Три ракурса одной мысли. Единица числа всегда совпадает с единицей сетки.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>Факт без оценки</h3>
+    <p>Тексты пишутся как факт: «6 минут на youtube.com», «до конца года 76 дней». Никаких «опять», стриков и счётчиков провалов.</p>
+    <p>Горизонт жизни задаёт сам человек, и в настройках прямо написано: это условность, а не прогноз. Старая версия показывала «58%, ещё 16 лет» — это читалось как мрачное предсказание.</p>
+
+    <h3>Эмоция сразу превращается в действие</h3>
+    <p>Встряска без следующего шага оставляет только неприятное чувство. Поэтому у окна одно поле — «Чем займёшься сейчас?» — и главная кнопка «Вернуться к делу». Задача остаётся в строке меню и держит фокус до следующего раза.</p>
+  </div>
+
+  <div class="col">
+    <h2>Визуал</h2>
+    <p>Сделал три направления для одного и того же экрана: точечная матрица в духе табло, терминал с моноширинным шрифтом и мягкое свечение, где прожитое растёт от центра, как годовые кольца.</p>
+    <p>Выбрал матрицу. Она предметная и спокойная: время читается как показание прибора, а не как драма. Терминал оказался слишком сухим, свечение — слишком декоративным для окна, которое должно считываться за пару секунд.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot ui"><img src="assets/memento/variants.webp" width="2240" height="1485" alt="Три визуальных направления: точечная матрица, терминал, свечение" loading="lazy"></div>
+    <figcaption>Три направления одного экрана. Дальше развивал первое.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Первая версия матрицы понравилась визуально, но с продуктовой стороны была непонятной: что это за точки, что идёт, в каких единицах. Я переложил окно в четыре капсулы, и каждая отвечает на один вопрос, который человек задаёт себе за пару секунд:</p>
+    <ul class="list">
+      <li>Почему это всплыло? — причина показа и крестик.</li>
+      <li>Что за число? — число и его смысл словами.</li>
+      <li>Что значат точки? — подписи возраста, легенда «прожито / сейчас / впереди» и масштаб. Сетку жизни сгруппировал по десятилетиям: строка — пять лет, две строки — десятилетие.</li>
+      <li>Что делать дальше? — поле задачи и две кнопки. «Через 10 минут» перенёс к главной кнопке, вместо того чтобы прятать его в иконку.</li>
+    </ul>
+  </div>
+  <figure class="wide">
+    <div class="pair" style="align-items:start">
+      <div><div class="shot ui"><img src="assets/memento/v1.webp" width="928" height="1562" alt="Первая версия матрицы без подписей" loading="lazy"></div><span class="tag">Было: непонятно, что это за точки</span></div>
+      <div><div class="shot ui"><img src="assets/memento/v2.webp" width="1120" height="1464" alt="Вторая версия: четыре капсулы с подписями и легендой" loading="lazy"></div><span class="tag">Стало: четыре вопроса — четыре капсулы</span></div>
+    </div>
+  </figure>
+
+  <div class="col">
+    <h2>Что сломалось, когда я начал им пользоваться</h2>
+    <p>Я собрал приложение на Swift и поставил себе. Первые же проверки показали то, чего не видно на макетах.</p>
+
+    <h3>Видео сбрасывало счётчик</h3>
+    <p>Я сидел на YouTube, точка мигала, но окно не появлялось. Причина: через три минуты без мыши и клавиатуры Memento решал, что я отошёл от компьютера, и обнулял счётчик. Но когда смотришь видео, ты как раз ничего не трогаешь. Продукт ломался ровно в главном сценарии.</p>
+    <p>Я переопределил, что значит «отошёл». Теперь это заблокированный экран или бездействие, когда на экране нет ничего из списка. Если открыт YouTube, отсутствие действий — это и есть залипание, а не уход.</p>
+
+    <h3>Мигание было непонятным</h3>
+    <p>Точка начала мигать, и я не понял, что это значит и чего от меня хотят. Теперь во время сигнала в строке меню вместо задачи написана причина, а в меню видно, сколько уже набежало: «На youtube.com: 3 из 5 мин».</p>
+
+    <h3>Приходилось угадывать названия приложений</h3>
+    <p>В первых настройках приложения для «не беспокоить» вписывались текстом. Чтобы это сработало, нужно знать, как именно приложение называется в системе. А созвоны в браузере так не ловились вообще. Список заменил переключателем «во время звонков» по микрофону и выбором из открытых приложений с иконками. Голые числа заменил короткими вариантами: порог 5, 10, 15 или 30 минут, фоновые встряски раз в час, два или три.</p>
+  </div>
+  <figure class="wide">
+    <div class="pair" style="align-items:start">
+      <div><div class="shot ui"><img src="assets/memento/settings-before.webp" width="1020" height="1570" alt="Первые настройки: системные поля, списки текстом" loading="lazy"></div><span class="tag">Было: системные поля и списки текстом</span></div>
+      <div><div class="shot ui"><img src="assets/memento/settings-after.webp" width="1080" height="2454" alt="Новые настройки: варианты, чипы, переключатель звонков" loading="lazy"></div><span class="tag">Стало: варианты вместо чисел, выбор вместо угадывания</span></div>
+    </div>
+  </figure>
+
+  <div class="col">
+    <h2>Получилось ли</h2>
+    <p>Честно: две задачи из трёх решены самой механикой, третья пока остаётся гипотезой.</p>
+    <ul class="list">
+      <li><b>Не наказывать хорошее поведение — да.</b> Встряска срабатывает на отвлечение, молчит во время звонков и сна, а самостоятельное возвращение засчитывается до того, как появится окно.</li>
+      <li><b>Без стыда — в основном да.</b> Тон фактический, стриков нет, горизонт задаёт сам человек. Но сетка жизни всё равно тяжёлый образ. Для тех, кому он не подходит, стоит дать возможность её отключить и оставить только год и день.</li>
+      <li><b>Не приедаться — не доказано.</b> Встряска стала редкой и уместной, и это главное, что работает против привыкания. Но ракурсов всего три, и они идут по кругу: жизнь, год, день, снова жизнь. Через неделю-две я буду заранее знать, что увижу, — и окно рискует снова стать фоном. Анимация заполнения тоже каждый раз одна и та же. Так ли это на самом деле, покажет только время.</li>
+    </ul>
+    <p>Поэтому в приложение встроен локальный журнал: каждый показ, реакция и время до ответа. Через 2–4 недели я смогу ответить на вопрос цифрами: держится ли доля возвратов к четвёртой неделе, как часто я ухожу сам на тихом сигнале и сколько окон закрываю не глядя, быстрее чем за две секунды.</p>
+    <p>Если эффект просядет, следующие шаги уже понятны: больше ракурсов, личные вехи на сетке вместо безликих точек, и спокойная обратная связь вроде «на этой неделе ты возвращался сам восемь раз» — в позитивном ключе, а не как счётчик провалов.</p>
+  </div>
+  <div class="col">
+    <h2>Как поставить себе</h2>
+    <p>Memento собирается прямо на вашем Mac из исходников: так не нужна подпись разработчика Apple, и macOS не будет ругаться на «неизвестное приложение». Нужен macOS 13 или новее.</p>
+    <ul class="list">
+      <li><a href="assets/memento/memento-mac.zip" download>Скачайте архив memento-mac.zip</a> — он сохранится в «Загрузки».</li>
+      <li>Откройте «Терминал» и выполните одну команду:<pre class="cmd"><code>cd ~/Downloads &amp;&amp; unzip -oq memento-mac.zip &amp;&amp; bash memento-mac/build.sh</code></pre>Скрипт соберёт приложение, положит его в «Программы» и запустит. Если браузер переименовал архив, например в «memento-mac (1).zip», поправьте имя в команде.</li>
+      <li>Если macOS предложит установить инструменты разработчика — согласитесь, дождитесь установки и выполните команду ещё раз.</li>
+      <li>При первом запуске откроются настройки: дата рождения, часы бодрствования и список отвлечений. Сайты добавляются чипами, приложения — из списка открытых.</li>
+      <li>Когда Memento спросит разрешение управлять браузером, разрешите: так он видит, какой сайт открыт в активной вкладке. Адреса никуда не отправляются. Сайты распознаются в Safari, Chrome, Arc, Яндекс Браузере, Brave и Edge.</li>
+    </ul>
+    <p>Всё хранится только на вашем Mac. Чтобы удалить, выйдите из Memento через значок в строке меню и удалите приложение из «Программ».</p>
+  </div>
+</article>
+
+<section class="col end">
+  <h2>Поживите с ним пару недель</h2>
+  <p style="margin:20px 0 0">Мне интересно, держится ли эффект не только у меня. Если поставите Memento, напишите через пару недель, что получилось: замечаете ли окно, раздражает ли оно и возвращаетесь ли к делу.</p>
+  <p style="margin:28px 0 0"><a class="prod" href="assets/memento/memento-mac.zip" download>Скачать Memento</a></p>
+  <p style="margin:14px 0 0"><a class="link" href="https://t.me/martgarcon" target="_blank" rel="noopener">Рассказать, как прошло, в Telegram →</a></p>
+</section>
+
+<footer class="wide"><span>Марат Мурзагалиев · продуктовый дизайнер</span><a href="index.html#work">Все проекты →</a></footer>
+
+<div class="lb" id="lb" aria-hidden="true"></div>
+<script>
+(()=>{ const lb=document.getElementById('lb'), embed=window.self!==window.top;
+  const show=(kind,src,poster)=>{ lb.innerHTML=kind==='video'?'<video src="'+src+'"'+(poster?' poster="'+poster+'"':'')+' autoplay muted loop playsinline controls></video>':'<img src="'+src+'" alt="">'; lb.classList.add('on'); };
+  const hide=()=>{ lb.classList.remove('on'); lb.innerHTML=''; };
+  document.addEventListener('click',e=>{ const m=e.target.closest('.shot img,.shot video'); if(!m) return; e.preventDefault();
+    const kind=m.tagName==='VIDEO'?'video':'img', src=new URL(m.currentSrc||m.getAttribute('src'),location.href).href, poster=m.poster||'';
+    if(embed){ try{ parent.postMessage({type:'rk-lightbox',kind,src,poster},'*'); return; }catch(err){} }
+    show(kind,src,poster); });
+  lb.addEventListener('click',hide);
+  addEventListener('keydown',e=>{ if(e.key==='Escape') hide(); });
+})();
+
+/* ---------- Типограф: без висячих предлогов ---------- */
+(()=>{ const re=/(^|[\s\u00A0(«])(в|во|и|с|со|к|ко|о|об|у|а|я|на|по|до|из|от|за|не|но|же|для|так|как|что|это|при|про|над|под|без)\s+/gi;
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('script,style,svg,.track')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const ns=[]; while(w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n=>{ let t=n.nodeValue; const o=t; t=t.replace(re,(m,a,b)=>a+b+'\u00A0').replace(re,(m,a,b)=>a+b+'\u00A0').replace(/\s+—/g,'\u00A0—'); if(t!==o) n.nodeValue=t; });
+})();
+
+/* ---------- Плавный скролл (колесо и якоря), на тач — нативный ---------- */
+(()=>{
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches || !matchMedia('(pointer:fine)').matches) { document.documentElement.style.scrollBehavior='smooth'; return; }
+  let target=scrollY, cur=scrollY, run=false;
+  const max=()=>document.documentElement.scrollHeight-innerHeight;
+  const loop=()=>{ cur+=(target-cur)*.09; if(Math.abs(target-cur)<.5){ cur=target; run=false; } scrollTo(0,cur); if(run) requestAnimationFrame(loop); };
+  const go=y=>{ target=Math.max(0,Math.min(max(),y)); if(!run){ cur=scrollY; run=true; requestAnimationFrame(loop); } }; window.__go=go;
+  addEventListener('wheel',e=>{ if(document.getElementById('lb').classList.contains('on')) return; if(e.ctrlKey || Math.abs(e.deltaX)>Math.abs(e.deltaY)) return; e.preventDefault();
+    const dy=e.deltaMode===1?e.deltaY*32:e.deltaY; if(!run) target=scrollY; go(target+dy); },{passive:false});
+  addEventListener('scroll',()=>{ if(!run){ target=cur=scrollY; } },{passive:true});
+  document.addEventListener('click',e=>{ const a=e.target.closest('a[href^="#"]'); if(!a) return; const id=a.getAttribute('href').slice(1);
+    const el=id?document.getElementById(id):document.body; if(!el) return; e.preventDefault(); go(el.getBoundingClientRect().top+scrollY-24); });
+  addEventListener('keydown',e=>{ const k={ArrowDown:80,ArrowUp:-80,PageDown:innerHeight*.9,PageUp:-innerHeight*.9,' ':innerHeight*.9}[e.key];
+    if(k===undefined || /input|textarea/i.test(e.target.tagName) || document.querySelector('dialog[open]')) return; e.preventDefault(); if(!run) target=scrollY; go(target+(e.shiftKey&&e.key===' '?-k:k)); });
+})();
+/* ---------- Линейка прокрутки ---------- */
+(()=>{ const N=46, rl=document.createElement('div'); rl.className='rl'; rl.setAttribute('aria-hidden','true');
+  const pct=document.createElement('div'); pct.className='rl-pct';
+  const ticks=[...Array(N)].map(()=>{ const i=document.createElement('i'); rl.append(i); return i; });
+  document.body.append(rl,pct);
+  const max=()=>Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  let secs=[];
+  const map=()=>{ ticks.forEach(t=>{ t.classList.remove('s'); t.removeAttribute('data-t'); t.dataset.y=''; });
+    secs=[...document.querySelectorAll('article h2, .end h2')].map(h=>{ const y=Math.min(max(),h.getBoundingClientRect().top+scrollY-40), k=Math.round(y/max()*(N-1));
+      const t=ticks[k]; t.classList.add('s'); t.dataset.t=h.textContent.trim(); t.dataset.y=y; return {k,y}; }); };
+  const jump=y=>window.__go?__go(y):scrollTo({top:y,behavior:'smooth'});
+  ticks.forEach((t,k)=>t.addEventListener('click',()=>jump(t.dataset.y?+t.dataset.y:k/(N-1)*max())));
+  let hide=0;
+  const draw=()=>{ const p=scrollY/max(), c=p*(N-1);
+    ticks.forEach((t,k)=>{ const d=Math.abs(k-c), w=Math.max(0,1-d/4); const base=t.classList.contains('s')?12:6;
+      t.style.width=(base+w*20)+'px'; t.style.opacity=t.classList.contains('on')?1:(t.classList.contains('s')?.3:.16)+w*.55; });
+    const ci=Math.round(c); ticks.forEach((t,k)=>t.classList.toggle('on',k===ci));
+    let cur=-1; secs.forEach((s,i)=>{ if(scrollY>=s.y-innerHeight*.4) cur=i; }); ticks.forEach(t=>t.classList.remove('cur')); if(cur>=0) ticks[secs[cur].k].classList.add('cur');
+    pct.textContent=String(Math.round(p*100)).padStart(2,'0')+'%'; pct.classList.add('on'); rl.classList.add('live'); clearTimeout(hide); hide=setTimeout(()=>{ pct.classList.remove('on'); rl.classList.remove('live'); },1200); };
+  let raf=0; addEventListener('scroll',()=>{ if(!raf) raf=requestAnimationFrame(()=>{ raf=0; draw(); }); },{passive:true});
+  addEventListener('resize',()=>{ map(); draw(); }); addEventListener('load',()=>{ map(); draw(); });
+  map(); draw(); setTimeout(()=>{ map(); draw(); },1500);
+})();
+
+/* ---------- Стеклянный курсор над медиа ---------- */
+(()=>{ if(!matchMedia('(pointer:fine)').matches) return; document.documentElement.classList.add('gc-t');
+  const c=document.createElement('div'); c.className='gc'; c.setAttribute('aria-hidden','true');
+  c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M10.5 7.8v5.4M7.8 10.5h5.4"/></svg>';
+  document.body.append(c);
+  let x=0,y=0,cx=0,cy=0,raf=0,on=false;
+  const loop=()=>{ cx+=(x-cx)*.28; cy+=(y-cy)*.28; c.style.transform='translate('+cx+'px,'+cy+'px)'; raf=(on||Math.abs(x-cx)+Math.abs(y-cy)>.5)?requestAnimationFrame(loop):0; };
+  let seen=false;
+  const check=()=>{ if(!seen) return; const el=document.elementFromPoint(x,y), t=el&&el.closest('.shot img,.shot video');
+    if(t&&!document.getElementById('lb').classList.contains('on')){ if(!on){ on=true; if(!c.classList.contains('on')){ cx=x; cy=y; } c.classList.add('on'); } } else if(on){ on=false; c.classList.remove('on'); }
+    if(!raf) raf=requestAnimationFrame(loop); };
+  addEventListener('pointermove',e=>{ x=e.clientX; y=e.clientY; seen=true; check(); },{passive:true});
+  addEventListener('scroll',check,{passive:true});
+  document.documentElement.addEventListener('mouseleave',()=>{ seen=false; on=false; c.classList.remove('on'); });
+  addEventListener('click',()=>{ on=false; c.classList.remove('on'); },true);
+})();
+
+</script>
+</body>
+</html>

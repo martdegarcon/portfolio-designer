@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Я устал собирать 3D-мокапы вручную — и сделал свой инструмент за 2 дня · Марат Мурзагалиев</title>
+<meta name="description" content="Как я сделал Rakurs Studio — инструмент, который превращает скриншоты интерфейсов в 3D-визуалы и видео с движением камеры.">
+<meta property="og:image" content="assets/rakurs/r-hero.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Lebowski";src:url(assets/fonts/lebowski.ttf) format("truetype");font-weight:100 900;font-display:swap}
+:root{--bg:#FFFFFF;--surface:#F7F7F6;--surface-2:#F1F1F0;--ink:#17181A;--ink-2:#3C3B37;--ink-3:#5C5B56;--ink-4:#6F6E68;--ink-5:#85847E;--rule:#17181A29;--rule-soft:#17181A14;--acc:#FF601A;
+  --body:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;--accent:"Lebowski","Inter Tight",sans-serif;
+  --fs-xs:16px;--fs-s:18px;--fs-m:24px;--fs-l:36px;--fs-xl:52px;--r-tile:28px}
+@media (max-width:600px){:root{--fs-l:30px;--fs-xl:38px;--fs-m:22px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font:400 var(--fs-s)/1.55 var(--body);-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+a{color:inherit}
+img,video{display:block;width:100%;height:auto}
+.wide,.col{max-width:750px;margin-left:auto;margin-right:auto;padding-left:20px;padding-right:20px}
+.col.end,.col.facts{box-sizing:content-box;max-width:710px}
+nav{display:flex;justify-content:space-between;align-items:center;height:72px;font-size:var(--fs-xs);color:var(--ink-5)}
+nav a{text-decoration:none}
+nav a:hover{color:var(--ink)}
+header{padding:88px 20px 56px;display:flex;flex-direction:column;align-items:center;text-align:center}
+h1{font-family:var(--accent);font-weight:500;font-size:var(--fs-xl);line-height:1.02;letter-spacing:-.02em;text-wrap:balance}
+.summary{margin-top:24px;max-width:560px;color:var(--ink-4);text-wrap:balance}
+.summary span{color:var(--ink-4)}
+.meta{margin-top:28px;font-size:var(--fs-xs);color:var(--ink-5)}
+.meta b{color:var(--ink-2)!important}
+header p[style]{margin-top:28px!important}
+.prod{display:inline-flex;align-items:center;height:48px;padding:0 24px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-size:var(--fs-xs);font-weight:500;transition:transform .25s cubic-bezier(.25,1,.5,1)}
+.prod:active{transform:scale(.97)}
+figure{margin:40px auto}
+.shot{border-radius:var(--r-tile);overflow:hidden;background:var(--surface)}
+.shot.ui{background:#0b0b0d}
+figcaption{margin-top:14px;font-size:var(--fs-xs);color:var(--ink-5);text-align:center;text-wrap:balance}
+.clips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.clips .big{grid-column:1/-1}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.pair,.clips{grid-template-columns:1fr}}
+.stack{display:grid;gap:12px}
+.tag{display:block;margin:12px 0 20px;font-size:var(--fs-xs);color:var(--ink-5);text-align:center}
+article h2{margin:120px 0 24px;font-family:var(--accent);font-weight:500;font-size:var(--fs-l);line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;text-align:center}
+article h3{margin:56px 0 14px;font-family:var(--accent);font-weight:500;font-size:var(--fs-m);line-height:1.2;text-transform:lowercase}
+article p{margin:0 0 16px;color:var(--ink-2)}
+.list{margin:8px 0 24px;padding:0;list-style:none}
+.list li{position:relative;padding:14px 0 14px 28px;border-top:1px solid var(--rule-soft);color:var(--ink-2)}
+.list li:last-child{border-bottom:1px solid var(--rule-soft)}
+.list li::before{position:absolute;left:0;top:14px;color:var(--ink-5);content:'—'}
+.end{padding:140px 20px 140px;text-align:center}
+.end h2{font-family:var(--accent);font-weight:500;font-size:var(--fs-l);line-height:1.1;text-transform:lowercase}
+.end p{color:var(--ink-4);max-width:520px;margin-left:auto!important;margin-right:auto!important;text-wrap:balance}
+.end .link{color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--rule)}
+footer{padding:24px 20px 40px;font-size:var(--fs-xs);color:var(--ink-5);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--rule-soft);max-width:750px;margin:0 auto}
+footer a{text-decoration:none}
+figure.wide{max-width:1120px}
+@media (min-width:701px){figure.wide,.sum{max-width:min(1120px,calc(100vw - 296px))}.col:not(.end){max-width:min(750px,calc(100vw - 296px))}}
+.shot img,.shot video{cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:4vh 3vw;background:rgba(23,24,26,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);cursor:zoom-out}
+.lb.on{display:flex;animation:lbIn .3s cubic-bezier(.25,1,.5,1)}
+.lb img,.lb video{width:auto;height:auto;max-width:100%;max-height:100%;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.4)}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.rl{position:fixed;z-index:20;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding:10px 6px}
+.rl i{position:relative;display:block;height:2px;width:6px;border-radius:2px;background:var(--ink);opacity:.16;cursor:pointer;transition:width .35s cubic-bezier(.25,1,.5,1),opacity .35s,background-color .35s}
+.rl i.s{width:12px;opacity:.3}
+.rl i.on{background:var(--acc);opacity:1}
+.rl i::after{content:attr(data-t);position:absolute;right:38px;top:50%;transform:translate(6px,-50%);width:88px;text-align:right;white-space:normal;font-family:var(--accent);font-size:14px;line-height:1.05;color:var(--ink);text-transform:lowercase;text-wrap:balance;opacity:0;pointer-events:none;transition:opacity .25s,transform .35s cubic-bezier(.25,1,.5,1)}
+.rl i[data-t]:hover::after{opacity:1;transform:translate(0,-50%)}
+.rl:hover i[data-t].cur:not(:hover)::after{opacity:0}
+.rl.live i[data-t].cur::after{opacity:1;transform:translate(0,-50%)}
+@media (max-width:899px){.rl i::after{display:none}}
+.rl:hover i[data-t]:hover::after{opacity:1}
+.rl-pct{position:fixed;z-index:20;right:14px;bottom:18px;font-family:var(--accent);font-size:14px;color:var(--ink-5);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .3s}
+.rl-pct.on{opacity:1}
+@media (max-width:700px){.rl,.rl-pct{display:none}html{scrollbar-width:auto}html::-webkit-scrollbar{display:block}}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 auto 8px;max-width:1120px;padding:0 20px}
+.sum div{background:var(--surface);border-radius:var(--r-tile);padding:26px 26px 28px}
+.sum b{display:block;margin-bottom:10px;font-family:var(--accent);font-weight:500;font-size:var(--fs-m);line-height:1.1;text-transform:lowercase;color:var(--ink)}
+.sum p{margin:0;font-size:16px;line-height:1.5;color:var(--ink-3)}
+@media (max-width:760px){.sum{grid-template-columns:1fr}}
+.gc{position:fixed;left:0;top:0;z-index:60;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;display:grid;place-items:center;pointer-events:none;
+  background:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);box-shadow:0 8px 32px rgba(23,24,26,.14),0 1px 3px rgba(23,24,26,.06);
+  opacity:0;scale:.4;transition:opacity .25s cubic-bezier(.25,1,.5,1),scale .35s cubic-bezier(.25,1,.5,1)}
+.gc.on{opacity:1;scale:1}
+.gc svg{width:20px;height:20px;color:var(--acc)}
+@media (pointer:fine){.gc-t .shot img,.gc-t .shot video{cursor:none}}
+@media not (pointer:fine){.gc{display:none}}
+html.embed nav,html.embed footer{display:none}
+html.embed header{padding-top:96px}
+</style>
+<script>if (window.self !== window.top) document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+
+<nav class="wide"><a href="index.html#work">← Все проекты</a><a href="index.html">Марат Мурзагалиев</a></nav>
+
+<header class="wide">
+  <h1>Я устал собирать 3D-мокапы вручную — и сделал свой инструмент за 2&nbsp;дня</h1>
+  <p class="summary">Rakurs Studio превращает скриншоты интерфейсов в 3D-визуалы и видео с движением камеры. <span>Я сделал его для собственных кейсов и Dribbble-шотов, а потом открыл для других дизайнеров.</span></p>
+  <p class="meta"><b style="color:var(--ink);font-weight:500">Дизайн + разработка</b> · 2 дня до первой публичной версии</p>
+  <p style=""><a class="prod" href="https://rakurs-studio.vercel.app/" target="_blank" rel="noopener">Протестировать Rakurs Studio</a></p>
+</header>
+
+<section class="sum" aria-label="Коротко о кейсе">
+  <div><b>Задача</b><p>Собирать 3D-подачу интерфейсов в Blender или After Effects долго, а готовые мокапы в Figma обрезают широкие дашборды. Нужен был инструмент: загрузил скриншот, настроил кадр, получил визуал — без 3D-редактора.</p></div>
+  <div><b>Решение</b><p>Браузерный инструмент с камерой, объективом и готовыми пролётами. Фототермины заменил понятными пресетами, разделил управление камерой и макетом, добавил тур для первого запуска.</p></div>
+  <div><b>Результат</b><p>Первая публичная версия за 2&nbsp;дня. Около минуты до готового кадра, PNG и MP4 до 4K, обработка прямо в браузере. Инструмент попробовали около 30 человек.</p></div>
+</section>
+
+<figure class="wide">
+  <div class="clips">
+    <div class="shot big"><video src="assets/rakurs/c3.mp4" poster="assets/rakurs/p-c3.webp" autoplay muted loop playsinline></video></div>
+    <div class="shot"><video src="assets/rakurs/c1.mp4" poster="assets/rakurs/p-c1.webp" autoplay muted loop playsinline></video></div>
+    <div class="shot"><video src="assets/rakurs/c4.mp4" poster="assets/rakurs/p-c4.webp" autoplay muted loop playsinline></video></div>
+  </div>
+  <figcaption>Все видео в этом кейсе и на моём сайте сделаны в Rakurs Studio.</figcaption>
+</figure>
+
+<article>
+  <div class="col">
+    <h2>Зачем я вообще его сделал</h2>
+    <p>Для своих работ я регулярно собирал кадры с перспективой, размытием и мягкими тенями. В Blender и After Effects можно получить нужный результат, но ради одного кадра это слишком долгий процесс. А после очередной правки макета всё приходится настраивать заново.</p>
+    <p>Готовые мокапы в Figma быстрее, но часто привязаны к определённым устройствам и не подходят для широких дашбордов.</p>
+    <p>Я пользовался UI Camera — сервисом с похожей идеей. Мне хотелось больше свободы в настройке сцены: готовые пролёты камеры, собственные градиенты и анимированные фоны, работа с видео. Ещё я хотел, чтобы инструмент был бесплатным и скриншоты не приходилось загружать на чужой сервер.</p>
+    <p>Так появился Rakurs Studio.</p>
+    <p>Задача была простой: загрузить интерфейс, настроить композицию и получить готовый визуал. Не открывать 3D-редактор, не разбираться в сложных инструментах и не тратить полчаса на один кадр.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot"><video src="assets/rakurs/screencast.mp4" poster="assets/rakurs/v3-final.webp" autoplay muted loop playsinline></video></div>
+    <figcaption>Рабочая область Rakurs Studio: загружаю скриншот, настраиваю кадр и записываю видео.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h2>От параметров к понятному управлению</h2>
+    <h3>Настроек становилось больше, а работать было сложнее</h3>
+    <p>В первой версии я разместил пятнадцать иконок в одну строку. У камеры, фона, формата кадра и экспорта не было понятной визуальной иерархии.</p>
+    <p>Я пытался сделать все возможности доступными в один клик, но в итоге усложнил поиск нужной настройки.</p>
+    <p>В следующей версии оставил на виду то, что нужно во время настройки кадра, — управление камерой и объективом. Остальные параметры вынес в отдельные панели.</p>
+    <p>Я также проверил стилизацию под видоискатель с техническими обозначениями и мелкими подписями. Она эффектно смотрелась на скриншоте, но отвлекала внимание от самого интерфейса. В итоге оставил сцену главным визуальным элементом, а панели сделал нейтральными.</p>
+  </div>
+  <figure class="wide">
+    <div class="stack">
+      <div><div class="shot"><img src="assets/rakurs/v1-studio.webp" alt="Первая версия: пятнадцать иконок в строку" loading="lazy"></div><span class="tag">Первая версия</span></div>
+      <div><div class="shot"><img src="assets/rakurs/v2-hud.webp" alt="Стилизация под видоискатель" loading="lazy"></div><span class="tag">Стилизация под видоискатель</span></div>
+      <div><div class="shot"><img src="assets/rakurs/flights.webp" alt="Текущая версия с панелью пролётов" loading="lazy"></div><span class="tag">Текущая версия</span></div>
+    </div>
+  </figure>
+
+  <div class="col">
+    <h3>Как дать контроль над камерой, не заставляя разбираться в фотографии</h3>
+    <p>Для нужного эффекта важны фокусное расстояние, глубина резкости и положение точки фокуса. Но если человек не знаком с фотографией, технические значения мало о чём говорят.</p>
+    <p>Я не хотел убирать эти настройки: тогда инструмент стал бы слишком ограниченным. Вместо этого добавил готовые варианты с понятными названиями и короткими описаниями. При этом точные значения остались доступны тем, кому нужен ручной контроль.</p>
+    <p>Теперь можно выбрать характер кадра, не подбирая параметры наугад, а при необходимости — настроить их точнее.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot ui" style="max-width:520px;margin:0 auto"><video src="assets/rakurs/ui-lens.mp4" autoplay muted loop playsinline></video></div>
+    <figcaption>Варианты фокусного расстояния и диафрагмы с описанием того, что каждый делает с кадром.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>Камера и макет — два разных действия</h3>
+    <p>Когда я добавил возможность двигать скриншот внутри кадра, сначала использовал одни и те же шкалы с переключателем «Камера / Макет».</p>
+    <p>Во время настройки приходилось постоянно переключаться между режимами. Иногда я двигал не тот объект и тратил время на исправление.</p>
+    <p>Я разделил управление: камера настраивается через шкалы, а положение самого макета — через отдельное поле с точкой, которую можно перетаскивать.</p>
+    <p>Смещение задаётся в процентах от кадра. Так положение остаётся предсказуемым при смене формата с горизонтального на вертикальный. Добавил привязку к центральным осям и возможность отключить её через Alt.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot ui"><video src="assets/rakurs/ui-camera.mp4" autoplay muted loop playsinline></video></div>
+    <figcaption>Шкалы камеры и поле макета рядом. Точка макета прилипает к центральной оси.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>Подсказки объясняли кнопки, но не помогали начать</h3>
+    <p>На раннем этапе у каждого элемента были подсказки. Этого казалось достаточно, пока я не дал инструмент знакомым без объяснений.</p>
+    <p>Они могли разобраться с настройками, но сначала не понимали, с чего начать: куда загрузить скриншот, что можно перетаскивать и как перейти к результату.</p>
+    <p>Я добавил короткий интерактивный тур поверх настоящего интерфейса. Он последовательно показывает основные действия, а не просто описывает отдельные кнопки. Тур можно пропустить и открыть повторно.</p>
+    <p>После запуска Rakurs Studio попробовали около 30 человек. Их отзывы помогли понять, что стоит упростить и какие возможности добавить. Для меня это был важный способ посмотреть на продукт не только глазами автора.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot"><img src="assets/rakurs/tour.webp" alt="Шаг интерактивного тура" loading="lazy"></div>
+    <figcaption>Один из восьми шагов тура: подсвечен настоящий элемент интерфейса.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h2>Что получилось</h2>
+    <p>За два дня я собрал первую публичную версию инструмента, который сам использую для оформления портфолио.</p>
+    <ul class="list dot">
+      <li>Около минуты от загрузки скриншота до готового кадра — по моим замерам.</li>
+      <li>PNG и MP4 для статичных визуалов и анимаций.</li>
+      <li>Разрешение до 4K и шесть форматов кадра.</li>
+      <li>Готовые движения камеры и возможность создавать собственные через таймлайн.</li>
+      <li>Настраиваемые градиенты, анимированные фоны, объектив и глубина резкости.</li>
+    </ul>
+  </div>
+  <figure class="wide">
+    <div class="shot ui"><video src="assets/rakurs/ui-timeline.mp4" autoplay muted loop playsinline></video></div>
+    <figcaption>Таймлайн: двигаю указатель, добавляю ключевой кадр, камера пролетает между ними.</figcaption>
+    <div class="pair" style="margin-top:14px">
+      <div class="shot ui"><video src="assets/rakurs/ui-flights.mp4" autoplay muted loop playsinline></video></div>
+      <div class="shot ui"><video src="assets/rakurs/ui-scene.mp4" autoplay muted loop playsinline></video></div>
+    </div>
+    <figcaption>Готовые пролёты и настройка фона: градиенты и анимированный Motion-фон.</figcaption>
+  </figure>
+  <div class="col">
+    <p>Обработка происходит непосредственно в браузере, без отправки скриншотов на мой сервер. Для экспорта видео я использовал рендеринг по кадрам, а не обычную запись предпросмотра, чтобы подготовка итогового ролика не зависела напрямую от плавности анимации в рабочем окне.</p>
+    <p>Это не полноценное исследование востребованности продукта. Но у меня появился работающий инструмент, которым я пользуюсь сам, и обратная связь примерно от 30 человек, на основе которой можно продолжать его развивать.</p>
+  </div>
+  <figure class="wide">
+    <div class="shot"><img src="assets/rakurs/r-hero.webp" alt="Широкий дашборд под углом" loading="lazy"></div>
+    <div class="pair" style="margin-top:14px">
+      <div class="shot"><img src="assets/rakurs/r-safari.webp" alt="Кадр в браузерной рамке" loading="lazy"></div>
+      <div class="shot"><img src="assets/rakurs/r-flat.webp" alt="Плоский ракурс на градиентном фоне" loading="lazy"></div>
+    </div>
+    <div class="shot" style="margin-top:14px"><video src="assets/rakurs/pipeline.mp4" poster="assets/rakurs/r-hero.webp" autoplay muted loop playsinline></video></div>
+    <figcaption>Широкий дашборд, кадр в браузерной рамке, градиентный фон и ролик с пролётом камеры.</figcaption>
+  </figure>
+</article>
+
+<section class="col end">
+  <h2>Попробуйте сами</h2>
+  <p style="margin:20px 0 0">Rakurs Studio доступен бесплатно. Загрузите свой скриншот, выберите ракурс и соберите кадр для портфолио или Dribbble.</p>
+  <p style="margin:28px 0 0"><a class="prod" href="https://rakurs-studio.vercel.app/" target="_blank" rel="noopener">Открыть Rakurs Studio</a></p>
+  <p style="margin:40px 0 0">Уже попробовали? Мне интересен взгляд со стороны: что оказалось неудобным, чего не хватает и что стоило бы изменить.</p>
+  <p style="margin:14px 0 0"><a class="link" href="https://t.me/martgarcon" target="_blank" rel="noopener">Оставить отзыв или предложить улучшение в Telegram →</a></p>
+</section>
+
+<footer class="wide"><span>Марат Мурзагалиев · продуктовый дизайнер</span><a href="index.html#work">Все проекты →</a></footer>
+
+<div class="lb" id="lb" aria-hidden="true"></div>
+<script>
+(()=>{ const lb=document.getElementById('lb'), embed=window.self!==window.top;
+  const show=(kind,src,poster)=>{ lb.innerHTML=kind==='video'?'<video src="'+src+'"'+(poster?' poster="'+poster+'"':'')+' autoplay muted loop playsinline controls></video>':'<img src="'+src+'" alt="">'; lb.classList.add('on'); };
+  const hide=()=>{ lb.classList.remove('on'); lb.innerHTML=''; };
+  document.addEventListener('click',e=>{ const m=e.target.closest('.shot img,.shot video'); if(!m) return; e.preventDefault();
+    const kind=m.tagName==='VIDEO'?'video':'img', src=new URL(m.currentSrc||m.getAttribute('src'),location.href).href, poster=m.poster||'';
+    if(embed){ try{ parent.postMessage({type:'rk-lightbox',kind,src,poster},'*'); return; }catch(err){} }
+    show(kind,src,poster); });
+  lb.addEventListener('click',hide);
+  addEventListener('keydown',e=>{ if(e.key==='Escape') hide(); });
+})();
+
+/* ---------- Типограф: без висячих предлогов ---------- */
+(()=>{ const re=/(^|[\s\u00A0(«])(в|во|и|с|со|к|ко|о|об|у|а|я|на|по|до|из|от|за|не|но|же|для|так|как|что|это|при|про|над|под|без)\s+/gi;
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('script,style,svg,.track')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const ns=[]; while(w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n=>{ let t=n.nodeValue; const o=t; t=t.replace(re,(m,a,b)=>a+b+'\u00A0').replace(re,(m,a,b)=>a+b+'\u00A0').replace(/\s+—/g,'\u00A0—'); if(t!==o) n.nodeValue=t; });
+})();
+
+/* ---------- Плавный скролл (колесо и якоря), на тач — нативный ---------- */
+(()=>{
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches || !matchMedia('(pointer:fine)').matches) { document.documentElement.style.scrollBehavior='smooth'; return; }
+  let target=scrollY, cur=scrollY, run=false;
+  const max=()=>document.documentElement.scrollHeight-innerHeight;
+  const loop=()=>{ cur+=(target-cur)*.09; if(Math.abs(target-cur)<.5){ cur=target; run=false; } scrollTo(0,cur); if(run) requestAnimationFrame(loop); };
+  const go=y=>{ target=Math.max(0,Math.min(max(),y)); if(!run){ cur=scrollY; run=true; requestAnimationFrame(loop); } }; window.__go=go;
+  addEventListener('wheel',e=>{ if(document.getElementById('lb').classList.contains('on')) return; if(e.ctrlKey || Math.abs(e.deltaX)>Math.abs(e.deltaY)) return; e.preventDefault();
+    const dy=e.deltaMode===1?e.deltaY*32:e.deltaY; if(!run) target=scrollY; go(target+dy); },{passive:false});
+  addEventListener('scroll',()=>{ if(!run){ target=cur=scrollY; } },{passive:true});
+  document.addEventListener('click',e=>{ const a=e.target.closest('a[href^="#"]'); if(!a) return; const id=a.getAttribute('href').slice(1);
+    const el=id?document.getElementById(id):document.body; if(!el) return; e.preventDefault(); go(el.getBoundingClientRect().top+scrollY-24); });
+  addEventListener('keydown',e=>{ const k={ArrowDown:80,ArrowUp:-80,PageDown:innerHeight*.9,PageUp:-innerHeight*.9,' ':innerHeight*.9}[e.key];
+    if(k===undefined || /input|textarea/i.test(e.target.tagName) || document.querySelector('dialog[open]')) return; e.preventDefault(); if(!run) target=scrollY; go(target+(e.shiftKey&&e.key===' '?-k:k)); });
+})();
+/* ---------- Линейка прокрутки ---------- */
+(()=>{ const N=46, rl=document.createElement('div'); rl.className='rl'; rl.setAttribute('aria-hidden','true');
+  const pct=document.createElement('div'); pct.className='rl-pct';
+  const ticks=[...Array(N)].map(()=>{ const i=document.createElement('i'); rl.append(i); return i; });
+  document.body.append(rl,pct);
+  const max=()=>Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  let secs=[];
+  const map=()=>{ ticks.forEach(t=>{ t.classList.remove('s'); t.removeAttribute('data-t'); t.dataset.y=''; });
+    secs=[...document.querySelectorAll('article h2, .end h2')].map(h=>{ const y=Math.min(max(),h.getBoundingClientRect().top+scrollY-40), k=Math.round(y/max()*(N-1));
+      const t=ticks[k]; t.classList.add('s'); t.dataset.t=h.textContent.trim(); t.dataset.y=y; return {k,y}; }); };
+  const jump=y=>window.__go?__go(y):scrollTo({top:y,behavior:'smooth'});
+  ticks.forEach((t,k)=>t.addEventListener('click',()=>jump(t.dataset.y?+t.dataset.y:k/(N-1)*max())));
+  let hide=0;
+  const draw=()=>{ const p=scrollY/max(), c=p*(N-1);
+    ticks.forEach((t,k)=>{ const d=Math.abs(k-c), w=Math.max(0,1-d/4); const base=t.classList.contains('s')?12:6;
+      t.style.width=(base+w*20)+'px'; t.style.opacity=t.classList.contains('on')?1:(t.classList.contains('s')?.3:.16)+w*.55; });
+    const ci=Math.round(c); ticks.forEach((t,k)=>t.classList.toggle('on',k===ci));
+    let cur=-1; secs.forEach((s,i)=>{ if(scrollY>=s.y-innerHeight*.4) cur=i; }); ticks.forEach(t=>t.classList.remove('cur')); if(cur>=0) ticks[secs[cur].k].classList.add('cur');
+    pct.textContent=String(Math.round(p*100)).padStart(2,'0')+'%'; pct.classList.add('on'); rl.classList.add('live'); clearTimeout(hide); hide=setTimeout(()=>{ pct.classList.remove('on'); rl.classList.remove('live'); },1200); };
+  let raf=0; addEventListener('scroll',()=>{ if(!raf) raf=requestAnimationFrame(()=>{ raf=0; draw(); }); },{passive:true});
+  addEventListener('resize',()=>{ map(); draw(); }); addEventListener('load',()=>{ map(); draw(); });
+  map(); draw(); setTimeout(()=>{ map(); draw(); },1500);
+})();
+
+/* ---------- Стеклянный курсор над медиа ---------- */
+(()=>{ if(!matchMedia('(pointer:fine)').matches) return; document.documentElement.classList.add('gc-t');
+  const c=document.createElement('div'); c.className='gc'; c.setAttribute('aria-hidden','true');
+  c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M10.5 7.8v5.4M7.8 10.5h5.4"/></svg>';
+  document.body.append(c);
+  let x=0,y=0,cx=0,cy=0,raf=0,on=false;
+  const loop=()=>{ cx+=(x-cx)*.28; cy+=(y-cy)*.28; c.style.transform='translate('+cx+'px,'+cy+'px)'; raf=(on||Math.abs(x-cx)+Math.abs(y-cy)>.5)?requestAnimationFrame(loop):0; };
+  let seen=false;
+  const check=()=>{ if(!seen) return; const el=document.elementFromPoint(x,y), t=el&&el.closest('.shot img,.shot video');
+    if(t&&!document.getElementById('lb').classList.contains('on')){ if(!on){ on=true; if(!c.classList.contains('on')){ cx=x; cy=y; } c.classList.add('on'); } } else if(on){ on=false; c.classList.remove('on'); }
+    if(!raf) raf=requestAnimationFrame(loop); };
+  addEventListener('pointermove',e=>{ x=e.clientX; y=e.clientY; seen=true; check(); },{passive:true});
+  addEventListener('scroll',check,{passive:true});
+  document.documentElement.addEventListener('mouseleave',()=>{ seen=false; on=false; c.classList.remove('on'); });
+  addEventListener('click',()=>{ on=false; c.classList.remove('on'); },true);
+})();
+
+</script>
+</body>
+</html>
